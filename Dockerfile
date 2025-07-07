@@ -15,6 +15,14 @@ RUN a2enmod rewrite
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Laravel setup: cache config and run migrations
+RUN php artisan config:clear \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+
+
+
 # Set working directory
 WORKDIR /var/www/html
 
@@ -34,6 +42,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
 EXPOSE 80
 CMD ["apache2-foreground"]
