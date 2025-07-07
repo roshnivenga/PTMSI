@@ -17,8 +17,12 @@ WORKDIR /var/www/html
 # Copy Laravel project files
 COPY . .
 
-# Install Laravel dependencies
+# Laravel backend
 RUN composer install --no-dev --optimize-autoloader
+
+# Vite frontend
+RUN npm install && npm run build
+
 
 # Set the correct public directory for Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
